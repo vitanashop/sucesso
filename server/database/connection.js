@@ -12,7 +12,7 @@ class Database {
       if (this.isConnected && this.pool) {
         return this.pool;
       }
-      
+
       // Configurar MySQL a partir da URL do Railway se disponível
       if (process.env.MYSQL_URL && !process.env.MYSQL_HOST) {
         try {
@@ -27,14 +27,14 @@ class Database {
           console.error('❌ Erro ao processar MYSQL_URL:', error);
         }
       }
-      
+
       // Se não tiver configuração MySQL, usar modo fallback
       if (!process.env.MYSQL_HOST && !process.env.MYSQL_URL) {
         console.log('⚠️ MySQL não configurado, usando modo fallback');
         this.isConnected = false;
         return null;
       }
-      
+
       // Configuração do MySQL
       const config = {
         host: process.env.MYSQL_HOST || 'localhost',
@@ -45,11 +45,9 @@ class Database {
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0,
-        acquireTimeout: 60000,
-        timeout: 60000,
-        reconnect: true,
         charset: 'utf8mb4',
-        timezone: '+00:00'
+        timezone: '+00:00',
+        family: 4 // ✅ Força uso de IPv4
       };
 
       console.log('🔌 Conectando ao MySQL...');
@@ -86,7 +84,7 @@ class Database {
     if (!this.isConnected || !this.pool) {
       throw new Error('MySQL não conectado - usando modo fallback');
     }
-    
+
     try {
       const [result] = await this.pool.execute(sql, params);
       return {
@@ -106,7 +104,7 @@ class Database {
     if (!this.isConnected || !this.pool) {
       throw new Error('MySQL não conectado - usando modo fallback');
     }
-    
+
     try {
       const [rows] = await this.pool.execute(sql, params);
       return rows[0] || null;
@@ -122,7 +120,7 @@ class Database {
     if (!this.isConnected || !this.pool) {
       throw new Error('MySQL não conectado - usando modo fallback');
     }
-    
+
     try {
       const [rows] = await this.pool.execute(sql, params);
       return rows;
@@ -138,13 +136,13 @@ class Database {
     if (!this.isConnected || !this.pool) {
       throw new Error('MySQL não conectado - usando modo fallback');
     }
-    
+
     const connection = await this.pool.getConnection();
-    
+
     try {
       await connection.beginTransaction();
-      
       const results = [];
+
       for (const operation of operations) {
         const [result] = await connection.execute(operation.sql, operation.params);
         results.push({
@@ -153,7 +151,7 @@ class Database {
           result
         });
       }
-      
+
       await connection.commit();
       return results;
     } catch (error) {
@@ -164,14 +162,13 @@ class Database {
     }
   }
 
-  // Método para executar múltiplas queries (útil para inicialização)
   async executeMultiple(queries) {
     if (!this.isConnected || !this.pool) {
       throw new Error('MySQL não conectado - usando modo fallback');
     }
-    
+
     const connection = await this.pool.getConnection();
-    
+
     try {
       for (const query of queries) {
         if (query.trim()) {
