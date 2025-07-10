@@ -1,0 +1,154 @@
+# Sistema de Gestão Vitana
+
+Sistema completo de gestão para depósitos de bebidas com MySQL hospedado na Railway.
+
+## 🚀 Deploy na Railway
+
+### 1. Configurar MySQL
+
+1. Acesse [Railway](https://railway.app)
+2. Crie um novo projeto
+3. Adicione um serviço MySQL:
+   - Clique em "Add Service"
+   - Selecione "Database" → "MySQL"
+   - Aguarde a criação do banco
+
+### 2. Configurar Aplicação
+
+1. No mesmo projeto, adicione um novo serviço:
+   - Clique em "Add Service"
+   - Selecione "GitHub Repo"
+   - Conecte este repositório
+
+2. Configure as variáveis de ambiente:
+   ```
+   NODE_ENV=production
+   JWT_SECRET=vitana-jwt-secret-key-2024
+   SUPER_ADMIN_PASSWORD=SuperAdmin2024!
+   ```
+
+3. As variáveis do MySQL são configuradas automaticamente:
+   - `MYSQL_URL` (fornecida automaticamente pelo Railway)
+   - `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`
+
+### 3. Deploy Automático
+
+O Railway fará o deploy automaticamente usando:
+- **Build**: `npm run build`
+- **Start**: `npm start`
+- **Port**: 3001 (configurado automaticamente)
+
+## 🗄️ Banco de Dados
+
+### Migração do SQLite para MySQL
+
+O sistema foi migrado do SQLite para MySQL com as seguintes melhorias:
+
+- **Performance**: Melhor para múltiplos usuários simultâneos
+- **Escalabilidade**: Suporte a mais conexões e dados
+- **Backup**: Backup automático na Railway
+- **Monitoramento**: Métricas de performance disponíveis
+
+### Estrutura das Tabelas
+
+- `users` - Usuários e solicitações de acesso
+- `user_credentials` - Credenciais de login (admin/operador)
+- `businesses` - Estabelecimentos
+- `products` - Produtos e estoque
+- `sales` - Vendas realizadas
+- `sale_items` - Itens das vendas
+- `stock_movements` - Movimentações de estoque
+- `nfce` - Notas fiscais eletrônicas
+- `settings` - Configurações por estabelecimento
+
+## 🔧 Desenvolvimento Local
+
+### Pré-requisitos
+
+- Node.js 18+
+- MySQL 8.0+
+
+### Configuração
+
+1. Clone o repositório:
+   ```bash
+   git clone <repo-url>
+   cd vitana-sistema
+   ```
+
+2. Instale as dependências:
+   ```bash
+   npm install
+   cd server && npm install
+   ```
+
+3. Configure o MySQL local:
+   ```bash
+   # Crie um banco de dados
+   mysql -u root -p
+   CREATE DATABASE vitana_db;
+   ```
+
+4. Configure as variáveis de ambiente:
+   ```bash
+   cp server/.env.example server/.env
+   # Edite server/.env com suas configurações
+   ```
+
+5. Inicialize o banco:
+   ```bash
+   cd server
+   npm run init-db
+   ```
+
+6. Execute em desenvolvimento:
+   ```bash
+   npm run dev:full
+   ```
+
+## 📱 Funcionalidades
+
+### Sistema Multi-Usuário
+- Super Admin para aprovar acessos
+- Sistema de senhas duplas (Admin/Operador)
+- Controle de permissões por função
+
+### Gestão Completa
+- **Produtos**: Cadastro, estoque, códigos de barras
+- **Vendas**: PDV completo com scanner
+- **Estoque**: Controle automático e alertas
+- **Relatórios**: Financeiros e de performance
+- **NFCe**: Emissão de notas fiscais
+
+### Interface Moderna
+- Design responsivo (mobile-first)
+- Tema escuro otimizado
+- Notificações em tempo real
+- Modo stand-by para PDV
+
+## 🔐 Segurança
+
+- Autenticação JWT
+- Senhas criptografadas (bcrypt)
+- Rate limiting
+- Validação de dados
+- CORS configurado
+
+## 📊 Monitoramento
+
+- Health checks automáticos
+- Logs estruturados
+- Métricas de performance
+- Backup automático (Railway)
+
+## 🆘 Suporte
+
+Para suporte técnico:
+- Email: suporte@vitana.com
+- Documentação: [docs.vitana.com]
+- Status: [status.vitana.com]
+
+---
+
+**Sistema de Gestão Vitana v2.0**  
+Desenvolvido com ❤️ para pequenos e médios negócios
